@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MzyDriftBottle</string>
+    <string name="get_bottle">捡一个</string>
+    <string name="drift_bottle">扔一个</string>
+</resources>
