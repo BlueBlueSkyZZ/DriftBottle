@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.animation.BounceInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void driftBottle(View view){
+
         mContext = this;
         Intent intent = new Intent(mContext, Drift.class);
         mContext.startActivity(intent);
@@ -70,9 +72,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getBottle(View view){
-        mContext = this;
-        Intent intent = new Intent(mContext, GetBottle.class);
-        mContext.startActivity(intent);
+        getGetBottle(getGetBottleUrl);
+        Toast.makeText(MainActivity.this, getGetBottleUrl, Toast.LENGTH_SHORT).show();
+        Log.d("getBottle", "getBottle: " + getGetBottleUrl);
+//        mContext = this;
+//        Intent intent = new Intent(mContext, GetBottle.class);
+//        mContext.startActivity(intent);
     }
 
     public void show_voice(View view){
@@ -130,7 +135,6 @@ public class MainActivity extends AppCompatActivity {
         text2 = (TextView) findViewById(R.id.textView2);
 
 
-
         ObjectAnimator animator1 = ObjectAnimator.ofFloat(voice, "scaleX", 1f, 0f, 0f);
         ObjectAnimator animator2 = ObjectAnimator.ofFloat(voice, "scaleY", 1f, 0f, 0f);
         ObjectAnimator animator3 = ObjectAnimator.ofFloat(voice, "translationY", 0f, 100f);
@@ -144,9 +148,6 @@ public class MainActivity extends AppCompatActivity {
         set.playTogether(animator1,animator2,animator3);
         set.setDuration(618);
         set.start();
-
-
-
 
         set.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -178,6 +179,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN){
+                    //创建频道
+                    postDrift("mzy","0",postDriftUrl);
                     voice.setImageResource(R.drawable.voice_button2_press);
 
                 }else if(event.getAction() == MotionEvent.ACTION_UP){
@@ -190,7 +193,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private String postDriftUrl = "http://www.iotesta.cn:8080/StrutsTest/postkeyandvalue";
+    private String IPv4 = "http://192.168.43.25:8888/";
+
+    private String postDriftUrl = IPv4 + "web01/servlet/CreateDriftbottleServlet";
 
     /**
      * 扔漂流瓶，创建房间，同时给搭建的后台服务器传输创建的房间
@@ -224,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private String getGetBottleUrl = "";
+    private String getGetBottleUrl = IPv4 + "web01/servlet/GetDriftbottleServlet";
 
     /**
      * 捡一个漂流瓶
@@ -256,10 +261,12 @@ public class MainActivity extends AppCompatActivity {
                     String isDisByUse = jsonObject.getString("IsDisByUse");
                     Log.d("getBottle", "name = " + roomName + ", isDisByUse = " + isDisByUse);
 
-                    if(isDisByUse == "0"){
+                    if(isDisByUse.equals("0")){
                         //不销毁房间
-                    }else if(isDisByUse == "1"){
+                        Log.d("getBottle", "不用销毁房间" + roomName);
+                    }else if(isDisByUse.equals("1")){
                         //销毁房间
+                        Log.d("getBottle", "销毁房间" + roomName);
                     }
 
                 } catch (JSONException e) {
