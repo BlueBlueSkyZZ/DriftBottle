@@ -1,5 +1,6 @@
 package com.example.mzy.mzydriftbottle;
 
+import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
@@ -23,6 +24,8 @@ public class GetBottle extends Activity {
     private Context mContext;
     private ImageView bottle;
 
+    private ImageView voice_dialog;
+
     private MediaPlayer mediaPlayer;
 
     @Override
@@ -30,13 +33,12 @@ public class GetBottle extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.getbottle);
 
-
-
         mContext = this;
 
         bottle = (ImageView) findViewById(R.id.getmybottle);
-        getBottle(bottle);
+        voice_dialog = (ImageView) findViewById(R.id.id_recorder_dialog_voice);
 
+        getBottle(bottle);
 
         //播放海浪的音频
         MediaManager.playRaw(mContext, R.raw.getbottle);
@@ -44,7 +46,6 @@ public class GetBottle extends Activity {
         bottle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(GetBottle.this, "我想做语音解析", Toast.LENGTH_SHORT).show();
 
                 String fileRoot = Environment.getExternalStorageDirectory()+"/imooc_recorder_audios";
                 Log.d("fileGetRandom", "fileRoot 是" + fileRoot);
@@ -52,25 +53,33 @@ public class GetBottle extends Activity {
                 final File[] files = myRoot.listFiles();
                 if(files.length == 0){
                     Log.d("fileGetRandom", "getRandomFile: 不存在的");
+                    Toast.makeText(mContext, "暂时没有录音哦", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 final int random = (int)(Math.random() * files.length);
 
-                MediaManager.playSound(files[random]+"", new MediaPlayer.OnCompletionListener() {
+                //Dialog
+                final DialogManager_Speaker dialogManager_speaker = new DialogManager_Speaker(mContext);
+                dialogManager_speaker.playingSound();
 
+                MediaManager.playSound(files[random]+"", new MediaPlayer.OnCompletionListener() {
 
                     @Override
                     public void onCompletion(MediaPlayer mp) {
-                        Toast.makeText(GetBottle.this, "放完了" + files[random], Toast.LENGTH_SHORT).show();
-
+                        Toast.makeText(GetBottle.this, "放完了,回去扔一个试试", Toast.LENGTH_SHORT).show();
+                        dialogManager_speaker.dismissDialog();//隐藏对话框
+                        hide_bottle(bottle);
                     }
                 });
             }
         });
     }
 
+    /**
+     * 显示漂流瓶动画
+     * @param view
+     */
     public void getBottle(View view){
-
         ObjectAnimator animator1 = ObjectAnimator.ofFloat(view, "scaleX", 0f, 3f, 3f);
         ObjectAnimator animator2 = ObjectAnimator.ofFloat(view, "scaleY", 0f, 3f, 3f);
         AnimatorSet set = new AnimatorSet();
@@ -80,11 +89,42 @@ public class GetBottle extends Activity {
         Toast.makeText(GetBottle.this, "海里出现了一个漂流瓶", Toast.LENGTH_SHORT).show();
     }
 
-
-
+    /**
+     * 返回主界面
+     * @param view
+     */
     public void back_get(View view){
         mContext = this;
         Intent intent = new Intent(mContext, Drift_main.class);
         mContext.startActivity(intent);
+    }
+
+    public void hide_bottle(final View view){
+        ObjectAnimator animator1 = ObjectAnimator.ofFloat(view, "alpha", 1f, 0f);
+        AnimatorSet set = new AnimatorSet();
+        set.playTogether(animator1);
+        set.setDuration(2000);
+        set.start();
+        set.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                view.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
     }
 }
