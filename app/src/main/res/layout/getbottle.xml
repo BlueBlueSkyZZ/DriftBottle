@@ -12,7 +12,6 @@
         android:layout_gravity="center_horizontal"
         android:src="@drawable/bottle_picked_voice_msg"
         android:layout_marginBottom="200dp"
-        android:onClick="getMsg"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 

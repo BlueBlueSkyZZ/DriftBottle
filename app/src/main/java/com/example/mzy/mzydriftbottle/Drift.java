@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -23,16 +24,26 @@ public class Drift extends Activity{
     private Context mContext;
     private ImageView bottle;
 
+    MediaPlayer mediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drift);
+
+
+        mContext = this;
+
         bottle = (ImageView) findViewById(R.id.dbotton);
         drift(bottle);
+
+
     }
 
     public void drift(View view){
+
+        //播放丢东西的音频
+        MediaManager.playRaw(mContext, R.raw.driftbottle);
 
         DisplayMetrics dm =getResources().getDisplayMetrics();
         int w_screen = dm.widthPixels;
@@ -55,6 +66,7 @@ public class Drift extends Activity{
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
                 upSpray();
+                MediaManager.playRaw(mContext, R.raw.spray);
                 Toast.makeText(Drift.this, "丢了一个漂流瓶", Toast.LENGTH_SHORT).show();
             }
         });
@@ -73,7 +85,7 @@ public class Drift extends Activity{
 
     public void back_drift(View view){
         mContext = this;
-        Intent intent = new Intent(mContext, MainActivity.class);
+        Intent intent = new Intent(mContext, Drift_main.class);
         mContext.startActivity(intent);
     }
 }
